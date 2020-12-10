@@ -1,0 +1,13 @@
+version: '2.0'
+services:
+    db:
+        image: postgres:12
+        container_name: "my_blog_db"
+        ports:
+          - "5432:5432"
+        volumes:
+          - ~/docker/volumes/postgresql12_my_blog_db:/var/lib/postgresql/data
+        environment:
+          - POSTGRES_USER=my_blog
+          - POSTGRES_PASSWORD=my_blog
+          - POSTGRES_DB=my_blog
