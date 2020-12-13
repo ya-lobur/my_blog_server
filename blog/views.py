@@ -1,3 +1,12 @@
-from django.shortcuts import render
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
-# Create your views here.
+from blog.models import Blog
+from blog.serializers import BlogModelSerializer
+
+
+@api_view(['GET'])
+def blog_list(request):
+    list_of_blog = Blog.objects.all()
+    serializer = BlogModelSerializer(list_of_blog, many=True)
+    return Response(serializer.data)
