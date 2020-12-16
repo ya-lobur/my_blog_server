@@ -1,15 +1,38 @@
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from rest_framework import generics
 
-from blog.models import Blog
-from blog.serializers import BlogModelSerializer
+from blog.models import Blog, Post
+from blog.serializers import BlogModelSerializer, PostReadUpdateSerializer, PostCreateSerializer
 
 
-@api_view(['GET'])
-def blog_list(request):
-    """
-    Список блогов
-    """
-    list_of_blog = Blog.objects.all()
-    serializer = BlogModelSerializer(list_of_blog, many=True)
-    return Response(serializer.data)
+class BlogCreate(generics.CreateAPIView):
+    queryset = Blog.objects.all()
+    serializer_class = BlogModelSerializer
+
+
+class BlogList(generics.ListAPIView):
+    queryset = Blog.objects.all()
+    serializer_class = BlogModelSerializer
+
+
+class BlogDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Blog.objects.all()
+    serializer_class = BlogModelSerializer
+
+
+class PostCreate(generics.CreateAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostCreateSerializer
+
+
+class PostList(generics.ListAPIView):
+    serializer_class = PostReadUpdateSerializer
+
+    def get_queryset(self):
+        if hasattr(self.request.user, 'blog'):
+            return self.request.user.blog.posts.all()
+        return Post.objects.none()
+
+
+class PostDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostReadUpdateSerializer
