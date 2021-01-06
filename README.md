@@ -37,3 +37,6 @@ python manage.py migrate
 ```shell
 python manage.py runserver
 ```
+
+### Frontend
+Приложение с фронтом(`my_blog_client`) должно находится в одной директории рядом с серверным(`my_blog_server`)
