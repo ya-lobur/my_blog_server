@@ -92,7 +92,9 @@ class PostTests(TestCase):
 
     def test_simple_post_create(self):
         """Должен создавать пост"""
-        url = reverse('blog:post-create')
+        # Хз почему Django по дефолту дает post-у на создание name как post-list. Видимо т.к. они detail==False:
+        url = reverse('blog:post-list')
+
         data = {'text_content': 'content'}
 
         response = self.client.post(path=url, data=json.dumps(data), content_type='application/json')
