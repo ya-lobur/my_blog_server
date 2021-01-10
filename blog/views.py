@@ -1,5 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework import generics
+from rest_framework import generics, viewsets
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -7,17 +7,7 @@ from blog.models import Blog, Post
 from blog.serializers import BlogModelSerializer, PostModelSerializer
 
 
-class BlogCreate(generics.CreateAPIView):
-    queryset = Blog.objects.all()
-    serializer_class = BlogModelSerializer
-
-
-class BlogList(generics.ListAPIView):
-    queryset = Blog.objects.all()
-    serializer_class = BlogModelSerializer
-
-
-class BlogDetail(generics.RetrieveUpdateDestroyAPIView):
+class BlogViewSet(viewsets.ModelViewSet):
     queryset = Blog.objects.all()
     serializer_class = BlogModelSerializer
 
