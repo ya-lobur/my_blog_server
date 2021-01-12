@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
 from pathlib import Path
+from dotenv import dotenv_values
+
+ENV_CONFIG = dotenv_values()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'f&*ntf&h-7zqpeuo2#xm365r0+(lyvcfe0c0ek=@mnz0u1i6_x'
+SECRET_KEY = ENV_CONFIG['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -91,8 +95,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'my_blog',
-        'USER': 'my_blog',
-        'PASSWORD': 'my_blog',
+        'USER': ENV_CONFIG['DB_USER'],
+        'PASSWORD': ENV_CONFIG['DB_PASSWORD'],
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }

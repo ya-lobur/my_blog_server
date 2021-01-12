@@ -13,6 +13,7 @@ class BlogViewSet(viewsets.ModelViewSet):
     serializer_class = BlogModelSerializer
 
 
+# Думаю стоит воткнуть action для Blog, который бы отдавал список постов этого блога
 # class PostList(generics.ListAPIView):
 #     serializer_class = PostModelSerializer
 #
