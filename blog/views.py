@@ -1,5 +1,6 @@
-from django.core.exceptions import ObjectDoesNotExist
-from rest_framework import generics, viewsets
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
@@ -7,25 +8,35 @@ from rest_framework.decorators import action
 from blog.models import Blog, Post
 from blog.serializers import BlogModelSerializer, PostModelSerializer
 
+page_param = openapi.Parameter(
+    'page', openapi.IN_QUERY,
+    description="A page number within the paginated result set.",
+    type=openapi.TYPE_INTEGER
+)
+
 
 class BlogViewSet(viewsets.ModelViewSet):
     queryset = Blog.objects.all()
     serializer_class = BlogModelSerializer
 
+    @swagger_auto_schema(manual_parameters=[page_param])
+    @action(detail=True, url_path='post-list')
+    def post_list(self, request, pk):
+        posts = Blog.objects.get(pk=pk).posts.all()
+        page = self.paginate_queryset(posts)
 
-# Думаю стоит воткнуть action для Blog, который бы отдавал список постов этого блога
-# class PostList(generics.ListAPIView):
-#     serializer_class = PostModelSerializer
-#
-#     def get_queryset(self):
-#         blog_id = self.request.query_params.get('blog', None)
-#
-#         if blog_id is None and self.request.user.is_authenticated:
-#             blog_id = self.request.user.blog.pk
-#
-#         if blog_id:
-#             return Post.objects.filter(blog_id=blog_id)
-#         return Post.objects.none()
+        if page is not None:
+            serializer = PostModelSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = PostModelSerializer(posts, many=True)
+
+        return Response(serializer.data)
+
+    def handle_exception(self, exc):
+        if isinstance(exc, Blog.DoesNotExist):
+            return Response(data={'error': 'Такого блога не существует'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(data={'error': exc.args}, status=exc.status_code if exc.status_code else status.HTTP_400_BAD_REQUEST)
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -37,6 +48,6 @@ class PostViewSet(viewsets.ModelViewSet):
             serializer.save(blog=user_blog)
 
     def handle_exception(self, exc):
-        """На случай, если нет блога"""
-        if isinstance(exc, ObjectDoesNotExist):
-            return Response(data={'error': exc.args}, status=status.HTTP_404_NOT_FOUND)
+        if isinstance(exc, Blog.DoesNotExist):
+            return Response(data={'error': 'Такого блога не существует'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(data={'error': exc.args}, status=exc.status_code if exc.status_code else status.HTTP_400_BAD_REQUEST)
