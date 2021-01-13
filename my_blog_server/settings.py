@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 from dotenv import dotenv_values
 
+# Словарь с переменными рабочей среды
 ENV_CONFIG = dotenv_values()
 
 

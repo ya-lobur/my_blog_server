@@ -17,7 +17,7 @@ class BlogTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user1 = create_user('user1')
-        Blog.objects.create(owner=cls.user1, description='some description')
+        cls.blog = Blog.objects.create(owner=cls.user1, description='some description')
 
     def setUp(self) -> None:
         self.client.force_login(self.user1)
@@ -42,8 +42,17 @@ class BlogTests(TestCase):
         self.assertDictEqual(response.data, BlogModelSerializer(Blog.objects.get(pk=self.user1.blog.pk)).data)
         self.assertEqual(response.data['description'], new_description)
 
-        # Забавно, но тут походу при повторном обращении к blog через user не происходит запрос в базу:
-        # print(BlogModelSerializer(self.user2.blog).data)
+    def test_post_list_action(self):
+        """Должен вернуть пагинированный список постов блога"""
+
+        post = Post.objects.create(blog=self.blog, text_content='Some content')
+        url = reverse('blog:blog-post-list', args=[self.blog.pk])
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response.data, {'count': 1, 'next': None, 'previous': None, 'results': [PostModelSerializer(post).data]})
+
 
 
 class PostTests(TestCase):
