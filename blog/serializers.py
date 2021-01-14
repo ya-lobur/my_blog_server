@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from blog.models import Blog, Post
 
 
@@ -8,6 +9,7 @@ class PostModelSerializer(serializers.ModelSerializer):
     """
     blog_id = serializers.PrimaryKeyRelatedField(read_only=True)
     author_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    liked_by = serializers.ListField(read_only=True)
 
     class Meta:
         model = Post
