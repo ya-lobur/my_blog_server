@@ -45,7 +45,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         if user_blog := self.request.user.blog:
-            serializer.save(blog=user_blog)
+            serializer.save(blog=user_blog, author=self.request.user)
 
     def handle_exception(self, exc):
         if isinstance(exc, Blog.DoesNotExist):

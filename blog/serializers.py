@@ -7,10 +7,11 @@ class PostModelSerializer(serializers.ModelSerializer):
     Сериализатор для операций чтения и обновления
     """
     blog_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    author_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Post
-        exclude = ('created', 'updated', 'blog')
+        exclude = ('created', 'updated', 'blog', 'author')
 
 
 class BlogModelSerializer(serializers.ModelSerializer):

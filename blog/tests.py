@@ -45,14 +45,13 @@ class BlogTests(TestCase):
     def test_post_list_action(self):
         """Должен вернуть пагинированный список постов блога"""
 
-        post = Post.objects.create(blog=self.blog, text_content='Some content')
+        post = Post.objects.create(blog=self.blog, author=self.user1, text_content='Some content')
         url = reverse('blog:blog-post-list', args=[self.blog.pk])
 
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(response.data, {'count': 1, 'next': None, 'previous': None, 'results': [PostModelSerializer(post).data]})
-
 
 
 class PostTests(TestCase):
@@ -67,7 +66,7 @@ class PostTests(TestCase):
 
     def test_post_detail_read(self):
         """Должен возвращать пост"""
-        post = Post.objects.create(blog=self.user1.blog, text_content='some interesting content')
+        post = Post.objects.create(blog=self.user1.blog, author=self.user1, text_content='some interesting content')
 
         url = reverse('blog:post-detail', args=[post.pk])
         response = self.client.get(url)
@@ -77,27 +76,27 @@ class PostTests(TestCase):
 
     def test_post_list_without_blog_param(self):
         """Должен отдавать список постов текущего юзера"""
-        post_1 = Post.objects.create(blog=self.user1.blog, text_content='some interesting content')
-        post_2 = Post.objects.create(blog=self.user1.blog, text_content='just content')
+        post_1 = Post.objects.create(blog=self.user1.blog, author=self.user1, text_content='some interesting content')
+        post_2 = Post.objects.create(blog=self.user1.blog, author=self.user1, text_content='just content')
 
         url = reverse('blog:post-list')
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertListEqual(response.data['results'], PostModelSerializer([post_1, post_2], many=True).data)
+        self.assertListEqual(response.data['results'], PostModelSerializer([post_2, post_1], many=True).data)
 
     def test_post_list_with_blog_param(self):
         """Должен отдавать список постов блога, id которого указан в параметре blog"""
         user2 = create_user('user2')
         user2_blog: Blog = Blog.objects.create(owner=user2)
-        post_1 = Post.objects.create(blog=user2_blog, text_content='some interesting content')
-        post_2 = Post.objects.create(blog=user2_blog, text_content='just content')
+        post_1 = Post.objects.create(blog=user2_blog, author=user2, text_content='some interesting content')
+        post_2 = Post.objects.create(blog=user2_blog, author=user2, text_content='just content')
 
         url = f"{reverse('blog:post-list')}?blog={user2_blog.pk}"
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertListEqual(response.data['results'], PostModelSerializer([post_1, post_2], many=True).data)
+        self.assertListEqual(response.data['results'], PostModelSerializer([post_2, post_1], many=True).data)
 
     def test_simple_post_create(self):
         """Должен создавать пост"""
@@ -113,7 +112,7 @@ class PostTests(TestCase):
 
     def test_post_detail_patch(self):
         """Должен обновить только text_content"""
-        post = Post.objects.create(blog=self.blog, text_content='old content')
+        post = Post.objects.create(blog=self.blog, author=self.user1, text_content='old content')
 
         url = reverse('blog:post-detail', args=[post.pk])
         new_data = {'text_content': 'new interesting text'}
@@ -125,7 +124,7 @@ class PostTests(TestCase):
 
     def test_post_detail_delete(self):
         """Должен удалить пост"""
-        post = Post.objects.create(blog=self.blog, text_content='old content')
+        post = Post.objects.create(blog=self.blog, author=self.user1, text_content='old content')
 
         url = reverse('blog:post-detail', args=[post.pk])
         response = self.client.delete(url)
