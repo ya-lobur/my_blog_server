@@ -1,4 +1,5 @@
 import json
+from datetime import date, timedelta
 
 from django.contrib.auth.models import User
 from django.test import TestCase
@@ -131,3 +132,28 @@ class PostTests(TestCase):
 
         self.assertEqual(response.status_code, 204)
         self.assertQuerysetEqual(Post.objects.none(), Post.objects.filter(pk=post.pk))
+
+    def test_daily_top_six_posts(self):
+        """Должен отдать 6 наиболее залайканных постов за сегодняшний день"""
+        user2 = create_user('user2')
+
+        # Топ 6 лайкнутых постов:
+        top_six = []
+        for i in range(6):
+            post = Post.objects.create(
+                blog=self.blog, author=self.user1, text_content=f'Post {i} content', liked_by=[self.user1.pk, user2.pk]
+            )
+            top_six.append(post)
+
+        # лайкнутый 1 раз
+        Post.objects.create(blog=self.blog, author=self.user1, liked_by=[user2.pk])
+
+        yesterday_post = Post.objects.create(blog=self.blog, author=self.user1, liked_by=[user2.pk, self.user1.pk])
+        yesterday_post.created = date.today() - timedelta(days=1)
+        yesterday_post.save()
+
+        url = reverse('blog:post-daily-top-six')
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertListEqual(response.data['top_posts'], PostModelSerializer(top_six, many=True).data)

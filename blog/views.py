@@ -45,9 +45,9 @@ class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostModelSerializer
 
-    @action(detail=False, url_path='daily-top-ten', pagination_class=None)
-    def daily_top_ten(self, request):
-        top_ten_posts = Post.objects.filter(created__contains=date.today()).order_by('liked_by__len')[:10]
+    @action(detail=False, url_path='daily-top-six', pagination_class=None)
+    def daily_top_six(self, request):
+        top_ten_posts = Post.objects.filter(created__contains=date.today()).order_by('-liked_by__len')[:6]
         serializer = PostModelSerializer(top_ten_posts, many=True)
         return Response({'top_posts': serializer.data})
 
