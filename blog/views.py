@@ -38,7 +38,7 @@ class BlogViewSet(viewsets.ModelViewSet):
     def handle_exception(self, exc):
         if isinstance(exc, Blog.DoesNotExist):
             return Response(data={'error': 'Такого блога не существует'}, status=status.HTTP_404_NOT_FOUND)
-        return Response(data={'error': exc.args}, status=exc.status_code if exc.status_code else status.HTTP_400_BAD_REQUEST)
+        return Response(data={'error': exc.args}, status=exc.status_code if hasattr(exc, 'status_code') else status.HTTP_400_BAD_REQUEST)
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -58,4 +58,4 @@ class PostViewSet(viewsets.ModelViewSet):
     def handle_exception(self, exc):
         if isinstance(exc, Blog.DoesNotExist):
             return Response(data={'error': 'Такого блога не существует'}, status=status.HTTP_404_NOT_FOUND)
-        return Response(data={'error': exc.args}, status=exc.status_code if exc.status_code else status.HTTP_400_BAD_REQUEST)
+        return Response(data={'error': exc.args}, status=exc.status_code if hasattr(exc, 'status_code') else status.HTTP_400_BAD_REQUEST)
