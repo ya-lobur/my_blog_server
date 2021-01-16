@@ -30,7 +30,8 @@ class BlogModelSerializer(serializers.ModelSerializer):
     """
     Сериализатор для операций чтения/обновления/создания
     """
+    owner_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Blog
-        exclude = ('created', 'updated',)
+        exclude = ('created', 'updated', 'owner')
