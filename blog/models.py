@@ -14,6 +14,8 @@ class Blog(models.Model):
 
 class Post(models.Model):
     blog = models.ForeignKey(Blog, on_delete=models.CASCADE, related_name='posts')
+    title = models.TextField(blank=True)
+    description = models.TextField(blank=True)
     text_content = models.TextField(blank=True, null=True)
     author = models.ForeignKey(to='auth.User', on_delete=models.CASCADE, related_name='posts')
     liked_by = ArrayField(models.PositiveIntegerField(), default=list)
