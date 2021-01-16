@@ -21,7 +21,7 @@ class Post(models.Model):
     updated = models.DateTimeField('Date of last update', auto_now=True, blank=True)
 
     class Meta:
-        ordering = ['-updated']
+        ordering = ['-created']
 
     def __str__(self):
         return f"Post(id: {self.pk}) from blog(id: {self.blog.pk}) by {self.author.get_full_name()}"
