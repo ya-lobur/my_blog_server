@@ -1,5 +1,6 @@
 from datetime import date
 
+from django.http import Http404
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
@@ -56,6 +57,6 @@ class PostViewSet(viewsets.ModelViewSet):
             serializer.save(blog=user_blog, author=self.request.user)
 
     def handle_exception(self, exc):
-        if isinstance(exc, Blog.DoesNotExist):
-            return Response(data={'error': 'Такого блога не существует'}, status=status.HTTP_404_NOT_FOUND)
+        if isinstance(exc, Http404):
+            return Response(data={'error': 'Объект не существует'}, status=status.HTTP_404_NOT_FOUND)
         return Response(data={'error': exc.args}, status=exc.status_code if hasattr(exc, 'status_code') else status.HTTP_400_BAD_REQUEST)
