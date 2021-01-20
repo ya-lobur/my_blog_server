@@ -17,5 +17,6 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
     path('blog/', include('blog.urls')),
-    path('', include('frontend.urls')),
+
+    path('', include('frontend.urls')),  # Урлы фронта должны быть тут, В САМОМ КОНЦЕ
 ]
