@@ -52,7 +52,7 @@ class BlogTests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertDictEqual(response.data, {'count': 1, 'next': None, 'previous': None, 'results': [PostModelSerializer(post).data]})
+        self.assertListEqual(response.data['results'],  [PostModelSerializer(post).data])
 
 
 class PostTests(TestCase):
