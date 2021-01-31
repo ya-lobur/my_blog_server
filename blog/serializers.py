@@ -23,7 +23,7 @@ class PostModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        exclude = ('created', 'updated', 'blog')
+        exclude = ('created', 'blog')
 
 
 class BlogModelSerializer(serializers.ModelSerializer):
