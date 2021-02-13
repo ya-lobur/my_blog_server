@@ -12,7 +12,15 @@ UserModel = get_user_model()
 
 
 def create_user(name: str) -> UserModel:
-    return UserModel.objects.create_user(username=name, password=name, email=f'{name}@test.ru')
+    user = UserModel.objects.create_user(username=name, email=f'{name}@test.ru')
+    user.set_password(name)
+    user.save()
+    return user
+
+
+def login(client, user):
+    url = reverse('user_profile:login')
+    client.post(url, {'email': user.email, 'password': user.username})
 
 
 class BlogTests(TestCase):
@@ -23,7 +31,7 @@ class BlogTests(TestCase):
         cls.blog = Blog.objects.create(owner=cls.user1, description='some description')
 
     def setUp(self) -> None:
-        self.client.force_login(self.user1)
+        login(self.client, self.user1)
 
     def test_blog_detail_read(self):
         """Должен отдать информацию о блоге"""
@@ -65,7 +73,7 @@ class PostTests(TestCase):
         cls.blog = Blog.objects.create(owner=cls.user1, description='some description')
 
     def setUp(self) -> None:
-        self.client.force_login(self.user1)
+        login(self.client, self.user1)
 
     def test_post_detail_read(self):
         """Должен возвращать пост"""

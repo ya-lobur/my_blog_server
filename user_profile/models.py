@@ -7,4 +7,3 @@ class Profile(AbstractUser):
     REQUIRED_FIELDS = []
 
     email = models.EmailField(unique=True)
-
