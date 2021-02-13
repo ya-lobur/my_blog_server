@@ -1,16 +1,18 @@
 import json
 from datetime import date, timedelta
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
 from blog.models import Blog, Post
 from blog.serializers import BlogModelSerializer, PostModelSerializer
 
+UserModel = get_user_model()
 
-def create_user(name: str) -> User:
-    return User.objects.create_user(username=name, password=name, email=f'{name}@test.ru')
+
+def create_user(name: str) -> UserModel:
+    return UserModel.objects.create_user(username=name, password=name, email=f'{name}@test.ru')
 
 
 class BlogTests(TestCase):
@@ -52,7 +54,7 @@ class BlogTests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertListEqual(response.data['results'],  [PostModelSerializer(post).data])
+        self.assertListEqual(response.data['results'], [PostModelSerializer(post).data])
 
 
 class PostTests(TestCase):
