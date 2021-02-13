@@ -153,15 +153,5 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_HEADERS = list(default_headers) + [
-    'Access-Control-Allow-Headers',
-    'Access-Control-Allow-Origin',
-    'Access-Control-Allow-Credentials',
-]
-
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", ]
-
-SESSION_COOKIE_SAMESITE = None
-CSRF_COOKIE_SAMESITE = None
 
 AUTH_USER_MODEL = 'user_profile.Profile'
