@@ -1,14 +1,13 @@
 from django.urls import path
-from rest_framework.authtoken import views
 
-from user_profile.views import register, ProfileAPIView
+from user_profile.views import register, login, ProfileAPIView
 
 app_name = 'user_profile'
 
 
 urlpatterns = [
     path('register', register),
-    path('login', views.obtain_auth_token),
+    path('login', login),
     path('info', ProfileAPIView.as_view()),
 
 ]
