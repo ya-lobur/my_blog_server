@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'blog.apps.BlogConfig',
     'frontend.apps.FrontendConfig',
+    'user_profile.apps.UserProfileConfig'
 ]
 
 REST_FRAMEWORK = {
@@ -155,7 +156,6 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
     'Access-Control-Allow-Origin',
     'Access-Control-Allow-Credentials',
 ]
-
 
 CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", ]
 
