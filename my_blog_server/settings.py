@@ -161,3 +161,5 @@ CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", ]
 
 SESSION_COOKIE_SAMESITE = None
 CSRF_COOKIE_SAMESITE = None
+
+AUTH_USER_MODEL = 'user_profile.Profile'
