@@ -7,31 +7,20 @@ from django.urls import reverse
 
 from blog.models import Blog, Post
 from blog.serializers import BlogModelSerializer, PostModelSerializer
+from user_profile.tests import create_profile, login
 
 UserModel = get_user_model()
-
-
-def create_user(name: str) -> UserModel:
-    user = UserModel.objects.create_user(username=name, email=f'{name}@test.ru')
-    user.set_password(name)
-    user.save()
-    return user
-
-
-def login(client, user):
-    url = reverse('user_profile:login')
-    client.post(url, {'email': user.email, 'password': user.username})
 
 
 class BlogTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user1 = create_user('user1')
+        cls.user1 = create_profile('user1', password='1234')
         cls.blog = Blog.objects.create(owner=cls.user1, description='some description')
 
     def setUp(self) -> None:
-        login(self.client, self.user1)
+        login(self.client, email=self.user1.email, password='1234')
 
     def test_blog_detail_read(self):
         """Должен отдать информацию о блоге"""
@@ -69,11 +58,11 @@ class PostTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user1 = create_user('user1')
+        cls.user1 = create_profile('user1', password='1234')
         cls.blog = Blog.objects.create(owner=cls.user1, description='some description')
 
     def setUp(self) -> None:
-        login(self.client, self.user1)
+        login(self.client, email=self.user1.email, password='1234')
 
     def test_post_detail_read(self):
         """Должен возвращать пост"""
@@ -98,7 +87,7 @@ class PostTests(TestCase):
 
     def test_post_list_with_blog_param(self):
         """Должен отдавать список постов блога, id которого указан в параметре blog"""
-        user2 = create_user('user2')
+        user2 = create_profile('user2')
         user2_blog: Blog = Blog.objects.create(owner=user2)
         post_1 = Post.objects.create(blog=user2_blog, author=user2, text_content='some interesting content')
         post_2 = Post.objects.create(blog=user2_blog, author=user2, text_content='just content')
@@ -145,7 +134,7 @@ class PostTests(TestCase):
 
     def test_daily_top_six_posts(self):
         """Должен отдать 6 наиболее залайканных постов за сегодняшний день"""
-        user2 = create_user('user2')
+        user2 = create_profile('user2')
 
         # Топ 6 лайкнутых постов:
         top_six = []

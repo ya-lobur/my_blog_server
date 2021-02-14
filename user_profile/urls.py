@@ -6,7 +6,7 @@ app_name = 'user_profile'
 
 
 urlpatterns = [
-    path('register', register),
+    path('register', register, name='register'),
     path('login', login, name='login'),
     path('info', ProfileAPIView.as_view()),
 
