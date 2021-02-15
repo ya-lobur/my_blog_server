@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth import get_user_model
 from rest_framework import exceptions, status
 from rest_framework.decorators import api_view, permission_classes
@@ -46,6 +48,13 @@ def login(request):
             return response
         else:
             raise exceptions.AuthenticationFailed('Неправильный пароль')
+
+
+@api_view(['POST'])
+def logout(_):
+    response = Response()
+    response.delete_cookie(key='jwt')
+    return response
 
 
 class ProfileAPIView(APIView):
