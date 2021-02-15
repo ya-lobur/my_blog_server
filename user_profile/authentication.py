@@ -8,10 +8,10 @@ from rest_framework.authentication import BaseAuthentication
 UserModel = get_user_model()
 
 
-def generate_access_token(user: UserModel):
+def generate_access_token(user: UserModel, expires: datetime.datetime):
     payload = {
         'user_id': user.id,
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
+        'exp': expires,
         'iat': datetime.datetime.utcnow()
     }
 

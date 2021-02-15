@@ -40,10 +40,11 @@ def login(request):
         raise exceptions.AuthenticationFailed('Пользователь не найден')
     else:
         if profile.check_password(password):
-            token = generate_access_token(profile)
+            expires = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+            token = generate_access_token(profile, expires=expires)
 
             response = Response(ProfileSerializer(profile).data)
-            response.set_cookie(key='jwt', value=token, httponly=True)
+            response.set_cookie(key='jwt', value=token, expires=expires, httponly=True)
 
             return response
         else:
