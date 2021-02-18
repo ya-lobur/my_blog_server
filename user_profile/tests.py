@@ -8,7 +8,7 @@ UserModel = get_user_model()
 
 
 def create_profile(name: str, **kwargs) -> UserModel:
-    user = UserModel.objects.create_user(username=name, email=f'{name}@test.ru', **kwargs)
+    user = UserModel.objects.create_user(email=f'{name}@test.ru', **kwargs)
 
     if password := kwargs.get('password'):
         user.set_password(password)
