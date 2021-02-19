@@ -46,15 +46,18 @@ INSTALLED_APPS = [
     'drf_yasg',
     'blog.apps.BlogConfig',
     'frontend.apps.FrontendConfig',
+    'user_profile.apps.UserProfileConfig'
 ]
 
 REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'user_profile.authentication.JWTAuthentication'
+    ],
+
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
         'rest_framework.permissions.IsAuthenticatedOrReadOnly'
     ],
+
     'DEFAULT_PAGINATION_CLASS': 'generic.pagination_overrides.DefaultPagination',
     'PAGE_SIZE': 10,
 }
@@ -150,14 +153,5 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_HEADERS = list(default_headers) + [
-    'Access-Control-Allow-Headers',
-    'Access-Control-Allow-Origin',
-    'Access-Control-Allow-Credentials',
-]
 
-
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", ]
-
-SESSION_COOKIE_SAMESITE = None
-CSRF_COOKIE_SAMESITE = None
+AUTH_USER_MODEL = 'user_profile.Profile'

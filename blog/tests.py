@@ -1,27 +1,26 @@
 import json
 from datetime import date, timedelta
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
 from blog.models import Blog, Post
 from blog.serializers import BlogModelSerializer, PostModelSerializer
+from user_profile.tests import create_profile, login
 
-
-def create_user(name: str) -> User:
-    return User.objects.create_user(username=name, password=name, email=f'{name}@test.ru')
+UserModel = get_user_model()
 
 
 class BlogTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user1 = create_user('user1')
+        cls.user1 = create_profile('user1', password='1234')
         cls.blog = Blog.objects.create(owner=cls.user1, description='some description')
 
     def setUp(self) -> None:
-        self.client.force_login(self.user1)
+        login(self.client, email=self.user1.email, password='1234')
 
     def test_blog_detail_read(self):
         """Должен отдать информацию о блоге"""
@@ -52,18 +51,18 @@ class BlogTests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertListEqual(response.data['results'],  [PostModelSerializer(post).data])
+        self.assertListEqual(response.data['results'], [PostModelSerializer(post).data])
 
 
 class PostTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user1 = create_user('user1')
+        cls.user1 = create_profile('user1', password='1234')
         cls.blog = Blog.objects.create(owner=cls.user1, description='some description')
 
     def setUp(self) -> None:
-        self.client.force_login(self.user1)
+        login(self.client, email=self.user1.email, password='1234')
 
     def test_post_detail_read(self):
         """Должен возвращать пост"""
@@ -88,7 +87,7 @@ class PostTests(TestCase):
 
     def test_post_list_with_blog_param(self):
         """Должен отдавать список постов блога, id которого указан в параметре blog"""
-        user2 = create_user('user2')
+        user2 = create_profile('user2')
         user2_blog: Blog = Blog.objects.create(owner=user2)
         post_1 = Post.objects.create(blog=user2_blog, author=user2, text_content='some interesting content')
         post_2 = Post.objects.create(blog=user2_blog, author=user2, text_content='just content')
@@ -135,7 +134,7 @@ class PostTests(TestCase):
 
     def test_daily_top_six_posts(self):
         """Должен отдать 6 наиболее залайканных постов за сегодняшний день"""
-        user2 = create_user('user2')
+        user2 = create_profile('user2')
 
         # Топ 6 лайкнутых постов:
         top_six = []
