@@ -12,6 +12,12 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 
+from corsheaders.defaults import default_headers
+from dotenv import dotenv_values
+
+# Словарь с переменными рабочей среды
+ENV_CONFIG = dotenv_values()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -19,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'f&*ntf&h-7zqpeuo2#xm365r0+(lyvcfe0c0ek=@mnz0u1i6_x'
+SECRET_KEY = ENV_CONFIG['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -40,16 +46,19 @@ INSTALLED_APPS = [
     'drf_yasg',
     'blog.apps.BlogConfig',
     'frontend.apps.FrontendConfig',
+    'user_profile.apps.UserProfileConfig'
 ]
 
 REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'user_profile.authentication.JWTAuthentication'
+    ],
+
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
         'rest_framework.permissions.IsAuthenticatedOrReadOnly'
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+
+    'DEFAULT_PAGINATION_CLASS': 'generic.pagination_overrides.DefaultPagination',
     'PAGE_SIZE': 10,
 }
 
@@ -91,8 +100,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'my_blog',
-        'USER': 'my_blog',
-        'PASSWORD': 'my_blog',
+        'USER': ENV_CONFIG['DB_USER'],
+        'PASSWORD': ENV_CONFIG['DB_PASSWORD'],
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
@@ -119,9 +128,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -141,3 +150,8 @@ STATICFILES_DIRS = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
+
+CORS_ALLOW_CREDENTIALS = True
+
+
+AUTH_USER_MODEL = 'user_profile.Profile'

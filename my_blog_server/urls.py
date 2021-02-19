@@ -6,7 +6,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 schema_view = get_schema_view(
-    openapi.Info(title="Blog Server API", default_version='v1', description="Test description", ),
+    openapi.Info(title="Blog Server API", default_version='v1', ),
     public=True,
     permission_classes=(permissions.AllowAny,),
 )
@@ -17,5 +17,7 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
     path('blog/', include('blog.urls')),
-    path('', include('frontend.urls')),
+    path('profile/', include('user_profile.urls')),
+
+    path('', include('frontend.urls')),  # Урлы фронта должны быть тут, В САМОМ КОНЦЕ
 ]
