@@ -11,7 +11,7 @@ class Blog(models.Model):
     updated = models.DateTimeField('Date of last update', auto_now=True, blank=True)
 
     def __str__(self):
-        return f"Blog belongs to {self.owner.get_full_name()} (id: {self.owner_id})"
+        return f"Blog pk: {self.pk} (owner pk: {self.owner_id})"
 
 
 class Post(models.Model):
@@ -28,4 +28,4 @@ class Post(models.Model):
         ordering = ['-created']
 
     def __str__(self):
-        return f"Post(id: {self.pk}) from blog(id: {self.blog.pk}) by {self.author.get_full_name()}"
+        return f"Post: {self.pk} from blog {self.blog.pk} by {self.author_id}"
