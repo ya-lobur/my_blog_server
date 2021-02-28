@@ -1,16 +1,19 @@
 import datetime
 
 from django.contrib.auth import get_user_model
+from django.http import Http404
+from django.shortcuts import redirect
 from rest_framework import exceptions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from blog.models import Blog
 from user_profile.authentication import generate_access_token
 from user_profile.serializers import ProfileSerializer
 
-UserModel = get_user_model()
+ProfileModel = get_user_model()
 
 
 @api_view(['POST'])
@@ -28,6 +31,23 @@ def register(request):
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def verify(request, uuid):
+    try:
+        profile = ProfileModel.objects.get(verification_uuid=uuid, is_verified=False)
+    except ProfileModel.DoesNotExist:
+        raise exceptions.NotFound("Profile does not exist or is already verified")
+
+    profile.is_verified = True
+    profile.save()
+
+    # Verified profile gets full functionality (gets a blog)
+    Blog.objects.create(owner=profile)
+
+    return redirect('http://localhost:8000/login?verified=1')
+
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
@@ -35,8 +55,8 @@ def login(request):
     password = request.data.get('password')
 
     try:
-        profile = UserModel.objects.get(email=email)
-    except UserModel.DoesNotExist:
+        profile = ProfileModel.objects.get(email=email)
+    except ProfileModel.DoesNotExist:
         raise exceptions.AuthenticationFailed('Пользователь не найден')
     else:
         if profile.check_password(password):
