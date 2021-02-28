@@ -1,9 +1,12 @@
 from django.conf.urls import url
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+
+from my_blog_server import settings
 
 schema_view = get_schema_view(
     openapi.Info(title="Blog Server API", default_version='v1', ),
@@ -19,5 +22,7 @@ urlpatterns = [
     path('blog/', include('blog.urls')),
     path('profile/', include('user_profile.urls')),
 
-    path('', include('frontend.urls')),  # Урлы фронта должны быть тут, В САМОМ КОНЦЕ
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Урлы фронта должны быть в самом конце
+urlpatterns.append(path('', include('frontend.urls')))

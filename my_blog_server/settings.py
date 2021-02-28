@@ -143,6 +143,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, '../my_blog_client/build/static'),
 ]
@@ -152,6 +155,5 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True
-
 
 AUTH_USER_MODEL = 'user_profile.Profile'
