@@ -1,7 +1,6 @@
 import datetime
 
 from django.contrib.auth import get_user_model
-from django.http import Http404
 from django.shortcuts import redirect
 from rest_framework import exceptions, status
 from rest_framework.decorators import api_view, permission_classes
@@ -59,7 +58,7 @@ def login(request):
     except ProfileModel.DoesNotExist:
         raise exceptions.AuthenticationFailed('Пользователь не найден')
     else:
-        if profile.check_password(password):
+        if profile.is_verified and profile.check_password(password):
             expires = datetime.datetime.utcnow() + datetime.timedelta(days=1)
             token = generate_access_token(profile, expires=expires)
 
@@ -68,7 +67,7 @@ def login(request):
 
             return response
         else:
-            raise exceptions.AuthenticationFailed('Неправильный пароль')
+            raise exceptions.AuthenticationFailed('Введен неправильный пароль или пользователь не верифицирован')
 
 
 @api_view(['POST'])
