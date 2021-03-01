@@ -15,8 +15,8 @@ def send_verification_email(profile_id):
     try:
         profile = ProfileModel.objects.get(pk=profile_id)
         send_mail(
-            'Verify your QuickPublisher account',
-            'Follow this link to verify your account: '
+            'Подтвердите регистрацию на MyBlog',
+            'Перейдите по ссылке, чтобы завершить регистрацию: '
             'http://localhost:8000%s' % reverse('user_profile:verify', kwargs={'uuid': str(profile.verification_uuid)}),
             settings.EMAIL_HOST_USER,
             [profile.email],
